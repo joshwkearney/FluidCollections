@@ -1,0 +1,9 @@
+C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections\obj\Debug\netstandard1.4\FluidCollections.csprojResolveAssemblyReference.cache
+C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections\obj\Debug\netstandard1.4\FluidCollections.csproj.CoreCompileInputs.cache
+C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections\obj\Debug\netstandard1.4\FluidCollections.AssemblyInfoInputs.cache
+C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections\obj\Debug\netstandard1.4\FluidCollections.AssemblyInfo.cs
+C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections\bin\Debug\netstandard1.4\FluidCollections.deps.json
+C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections\bin\Debug\netstandard1.4\FluidCollections.dll
+C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections\bin\Debug\netstandard1.4\FluidCollections.pdb
+C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections\obj\Debug\netstandard1.4\FluidCollections.dll
+C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections\obj\Debug\netstandard1.4\FluidCollections.pdb
