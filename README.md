@@ -84,7 +84,7 @@ foreach (int num in bufferedSet3.AsEnumerable()) {
 #### OrderBy
 OrderBy buffers a reactive set into an ordered reactive set (see below), using either the default comparer or a provided property to sort on.
 
-```
+```C#
 IOrderedReactiveSet<int> set4 = set1.OrderBy(x => x /* Normally a useful property */);
 
 Console.WriteLine(set4.Min);
