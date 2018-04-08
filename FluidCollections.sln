@@ -5,22 +5,32 @@ VisualStudioVersion = 15.0.27428.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluidCollections", "src\FluidCollections\FluidCollections.csproj", "{B0678C16-4233-4EA1-9EFA-A4C1F7363CD2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluidCollections.Demo", "src\FluidCollections.Demo\FluidCollections.Demo.csproj", "{9449A200-EE7D-49AB-83B0-95CFCC9E1521}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluidCollections.Demo", "src\FluidCollections.Demo\FluidCollections.Demo.csproj", "{9449A200-EE7D-49AB-83B0-95CFCC9E1521}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B0678C16-4233-4EA1-9EFA-A4C1F7363CD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B0678C16-4233-4EA1-9EFA-A4C1F7363CD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0678C16-4233-4EA1-9EFA-A4C1F7363CD2}.Debug|x64.ActiveCfg = Debug|x64
+		{B0678C16-4233-4EA1-9EFA-A4C1F7363CD2}.Debug|x64.Build.0 = Debug|x64
 		{B0678C16-4233-4EA1-9EFA-A4C1F7363CD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0678C16-4233-4EA1-9EFA-A4C1F7363CD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0678C16-4233-4EA1-9EFA-A4C1F7363CD2}.Release|x64.ActiveCfg = Release|x64
+		{B0678C16-4233-4EA1-9EFA-A4C1F7363CD2}.Release|x64.Build.0 = Release|x64
 		{9449A200-EE7D-49AB-83B0-95CFCC9E1521}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9449A200-EE7D-49AB-83B0-95CFCC9E1521}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9449A200-EE7D-49AB-83B0-95CFCC9E1521}.Debug|x64.ActiveCfg = Debug|x64
+		{9449A200-EE7D-49AB-83B0-95CFCC9E1521}.Debug|x64.Build.0 = Debug|x64
 		{9449A200-EE7D-49AB-83B0-95CFCC9E1521}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9449A200-EE7D-49AB-83B0-95CFCC9E1521}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9449A200-EE7D-49AB-83B0-95CFCC9E1521}.Release|x64.ActiveCfg = Release|x64
+		{9449A200-EE7D-49AB-83B0-95CFCC9E1521}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
