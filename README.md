@@ -48,7 +48,7 @@ set1.Select(x => x + 75);
 ```
 
 #### Aggregate and friends
-Aggregate on reactive sets is similar to that of linq, but with one major exception: The aggregate for reactive sets is a *running* total, not an instantaneous total. As such, it returns an IObservable of the result. Aggregate essentially converts the changes to a reactive set into a running total by using the supplied add function or remove function, depending on the type of update. After updating the total, the new result is pushed to the `IObservable`
+Aggregate on reactive sets is similar to that of linq, but with one major exception: The aggregate for reactive sets is a *running* total, not an instantaneous total. As such, it returns an IObservable of the result. Aggregate essentially converts the changes from a reactive set into a running total by using the supplied add function or remove function, depending on the type of update. After updating the total, the new result is pushed to the `IObservable`
 
 ```C#
 // ReactiveSet<T>.Aggregate(seed, addFunction, removeFunction)
