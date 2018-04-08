@@ -75,7 +75,7 @@ ICollectedReactiveSet<int> bufferedSet3 = set3.ToReactiveSet();
 Console.WriteLine(bufferedSet3.Count);
 
 // Can traverse the elements currently in the set
-// Since the set is reactive, both the elements and the count can unpredictable change
+// Since the set is reactive, both the elements and the count can unpredictably change
 foreach (int num in bufferedSet3.AsEnumerable()) {
     Console.WriteLine(num);
 }
