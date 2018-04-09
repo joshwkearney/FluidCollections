@@ -3,3 +3,6 @@
 ################################################################################
 
 /.vs/FluidCollections/v15
+/.vs/slnx.sqlite
+/src/FluidCollections/obj
+/src/FluidCollections.Demo/obj
