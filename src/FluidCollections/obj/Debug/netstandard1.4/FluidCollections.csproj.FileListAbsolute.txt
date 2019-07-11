@@ -7,3 +7,12 @@ C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections\bin\Debug\nets
 C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections\bin\Debug\netstandard1.4\FluidCollections.pdb
 C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections\obj\Debug\netstandard1.4\FluidCollections.dll
 C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections\obj\Debug\netstandard1.4\FluidCollections.pdb
+C:\Users\joshw\Source\Repos\Blue0500\FluidCollections\src\FluidCollections\obj\Debug\netstandard1.4\FluidCollections.csprojAssemblyReference.cache
+C:\Users\joshw\Source\Repos\Blue0500\FluidCollections\src\FluidCollections\obj\Debug\netstandard1.4\FluidCollections.csproj.CoreCompileInputs.cache
+C:\Users\joshw\Source\Repos\Blue0500\FluidCollections\src\FluidCollections\obj\Debug\netstandard1.4\FluidCollections.AssemblyInfoInputs.cache
+C:\Users\joshw\Source\Repos\Blue0500\FluidCollections\src\FluidCollections\obj\Debug\netstandard1.4\FluidCollections.AssemblyInfo.cs
+C:\Users\joshw\Source\Repos\Blue0500\FluidCollections\src\FluidCollections\obj\Debug\netstandard1.4\FluidCollections.dll
+C:\Users\joshw\Source\Repos\Blue0500\FluidCollections\src\FluidCollections\obj\Debug\netstandard1.4\FluidCollections.pdb
+C:\Users\joshw\Source\Repos\Blue0500\FluidCollections\src\FluidCollections\bin\Debug\netstandard1.4\FluidCollections.deps.json
+C:\Users\joshw\Source\Repos\Blue0500\FluidCollections\src\FluidCollections\bin\Debug\netstandard1.4\FluidCollections.dll
+C:\Users\joshw\Source\Repos\Blue0500\FluidCollections\src\FluidCollections\bin\Debug\netstandard1.4\FluidCollections.pdb

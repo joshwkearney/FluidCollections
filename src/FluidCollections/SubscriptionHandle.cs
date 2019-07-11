@@ -2,7 +2,7 @@
 
 namespace FluidCollections {
     internal class SubscriptionHandle : IDisposable {
-        private Action action;
+        private readonly Action action;
         private bool isDisposed = false;
 
         public SubscriptionHandle(Action action) {

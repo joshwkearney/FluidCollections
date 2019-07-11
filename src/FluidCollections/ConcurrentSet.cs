@@ -3,14 +3,11 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FluidCollections {
     internal class ConcurrentSet<T> : IEnumerable<T>, IEnumerable, ICollection<T>, ICollection, IReadOnlyCollection<T>, ISet<T> {
-
-        private ConcurrentDictionary<T, bool> dict;
-        private IEqualityComparer<T> comparer;
+        private readonly ConcurrentDictionary<T, bool> dict;
+        private readonly IEqualityComparer<T> comparer;
 
         public ConcurrentSet() : this(EqualityComparer<T>.Default) { }
 

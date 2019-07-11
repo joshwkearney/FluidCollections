@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace FluidCollections {
-    internal class OrderedSet<T> : IEnumerable<T>, ICollection<T>, IReadOnlyCollection<T>, IReadOnlyList<T>, ISet<T> {
+    public class OrderedSet<T> : IEnumerable<T>, ICollection<T>, IReadOnlyCollection<T>, IReadOnlyList<T>, ISet<T> {
         private readonly IComparer<T> comparer;
         private readonly ReaderWriterLockSlim modifyLock = new ReaderWriterLockSlim();
         private Node root = null;
@@ -15,9 +12,45 @@ namespace FluidCollections {
 
         public int Count => root?.Size ?? 0;
 
-        public T Max => (this.root != null) ? this.Max_Core(this.root) : default;
+        public T Max {
+            get {
+                if (this.root == null) {
+                    return default;
+                }
+                else {
+                    this.modifyLock.EnterReadLock();
 
-        public T Min => (this.root != null) ? this.Min_Core(this.root) : default;
+                    try {
+                        this.modifyLock.EnterReadLock();
+
+                        return this.Max_Core(this.root);
+                    }
+                    finally {
+                        this.modifyLock.ExitReadLock();
+                    }
+                }
+            }
+        }
+
+        public T Min {
+            get {
+                if (this.root == null) {
+                    return default;
+                }
+                else {
+                    this.modifyLock.EnterReadLock();
+
+                    try {
+                        this.modifyLock.EnterReadLock();
+
+                        return this.Min_Core(this.root);
+                    }
+                    finally {
+                        this.modifyLock.ExitReadLock();
+                    }
+                }
+            }
+        }
 
         bool ICollection<T>.IsReadOnly => false;
 
@@ -80,7 +113,16 @@ namespace FluidCollections {
             }
         }
 
-        public int IndexOf(T item) => this.IndexOf_Core(this.root, item, 0);
+        public int IndexOf(T item) {
+            this.modifyLock.EnterReadLock();
+
+            try {
+                return this.IndexOf_Core(this.root, item, 0);
+            }
+            finally {
+                this.modifyLock.ExitReadLock();
+            }
+        }
 
         public bool RemoveAt(int index) {
             if (index < 0 || index >= this.Count) throw new IndexOutOfRangeException();
@@ -194,37 +236,23 @@ namespace FluidCollections {
         }
 
         private T Min_Core(Node node) {
-            this.modifyLock.EnterReadLock();
+            var current = node;
 
-            try {
-                var current = node;
-
-                while (current.Left != null) {
-                    current = current.Left;
-                }
-
-                return current.Value;
+            while (current.Left != null) {
+                current = current.Left;
             }
-            finally {
-                this.modifyLock.ExitReadLock();
-            }
+
+            return current.Value;
         }
 
         private T Max_Core(Node node) {
-            this.modifyLock.EnterReadLock();
+            var current = node;
 
-            try {
-                var current = node;
-
-                while (current.Right != null) {
-                    current = current.Right;
-                }
-
-                return current.Value;
+            while (current.Right != null) {
+                current = current.Right;
             }
-            finally {
-                this.modifyLock.ExitReadLock();
-            }
+
+            return current.Value;
         }
 
         private T Indexing_Core(Node node, int index) {
@@ -249,26 +277,19 @@ namespace FluidCollections {
         }
 
         private int IndexOf_Core(Node node, T item, int index) {
-            this.modifyLock.EnterReadLock();
-
-            try {
-                if (node == null) {
-                    return ~index;
-                }
-
-                int compare = this.comparer.Compare(item, node.Value);
-                if (compare > 0) {
-                    return this.IndexOf_Core(node.Right, item, index + (node.Left?.Size ?? 0) + 1);
-                }
-                else if (compare < 0) {
-                    return this.IndexOf_Core(node.Left, item, index);
-                }
-                else {
-                    return index;
-                }
+            if (node == null) {
+                return ~index;
             }
-            finally {
-                this.modifyLock.ExitReadLock();
+
+            int compare = this.comparer.Compare(item, node.Value);
+            if (compare > 0) {
+                return this.IndexOf_Core(node.Right, item, index + (node.Left?.Size ?? 0) + 1);
+            }
+            else if (compare < 0) {
+                return this.IndexOf_Core(node.Left, item, index);
+            }
+            else {
+                return index + (node.Left?.Size ?? 0);
             }
         }
 

@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace FluidCollections {
 
-namespace FluidCollections {
-    public interface IOrderedReactiveSet<T> : ICollectedReactiveSet<T>, INotifyCollectionChanged {
+    public interface IOrderedReactiveSet<T> : ICollectedReactiveSet<T> {
         T this[int index] { get; }
 
         T Min { get; }
@@ -17,5 +8,7 @@ namespace FluidCollections {
         T Max { get; }
 
         int IndexOf(T item);
+
+        IObservableCollection<T> ToObservableCollection();
     }
 }

@@ -2,7 +2,8 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs/FluidCollections/v15
-/.vs/slnx.sqlite
-/src/FluidCollections/obj
-/src/FluidCollections.Demo/obj
+.vs
+*.suo
+bin
+obj
+packages

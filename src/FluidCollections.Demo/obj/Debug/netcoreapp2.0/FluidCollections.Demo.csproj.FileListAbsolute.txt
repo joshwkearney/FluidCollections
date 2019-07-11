@@ -12,3 +12,17 @@ C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections.Demo\obj\Debug
 C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections.Demo\obj\Debug\netcoreapp2.0\FluidCollections.Demo.csproj.CopyComplete
 C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections.Demo\obj\Debug\netcoreapp2.0\FluidCollections.Demo.dll
 C:\Users\joshw\source\repos\FluidCollections\src\FluidCollections.Demo\obj\Debug\netcoreapp2.0\FluidCollections.Demo.pdb
+C:\Users\joshw\source\repos\Blue0500\FluidCollections\src\FluidCollections.Demo\obj\Debug\netcoreapp2.0\FluidCollections.Demo.csprojAssemblyReference.cache
+C:\Users\joshw\source\repos\Blue0500\FluidCollections\src\FluidCollections.Demo\obj\Debug\netcoreapp2.0\FluidCollections.Demo.csproj.CoreCompileInputs.cache
+C:\Users\joshw\source\repos\Blue0500\FluidCollections\src\FluidCollections.Demo\obj\Debug\netcoreapp2.0\FluidCollections.Demo.AssemblyInfoInputs.cache
+C:\Users\joshw\source\repos\Blue0500\FluidCollections\src\FluidCollections.Demo\obj\Debug\netcoreapp2.0\FluidCollections.Demo.AssemblyInfo.cs
+C:\Users\joshw\source\repos\Blue0500\FluidCollections\src\FluidCollections.Demo\bin\Debug\netcoreapp2.0\FluidCollections.Demo.deps.json
+C:\Users\joshw\source\repos\Blue0500\FluidCollections\src\FluidCollections.Demo\bin\Debug\netcoreapp2.0\FluidCollections.Demo.runtimeconfig.json
+C:\Users\joshw\source\repos\Blue0500\FluidCollections\src\FluidCollections.Demo\bin\Debug\netcoreapp2.0\FluidCollections.Demo.runtimeconfig.dev.json
+C:\Users\joshw\source\repos\Blue0500\FluidCollections\src\FluidCollections.Demo\bin\Debug\netcoreapp2.0\FluidCollections.Demo.dll
+C:\Users\joshw\source\repos\Blue0500\FluidCollections\src\FluidCollections.Demo\bin\Debug\netcoreapp2.0\FluidCollections.Demo.pdb
+C:\Users\joshw\source\repos\Blue0500\FluidCollections\src\FluidCollections.Demo\bin\Debug\netcoreapp2.0\FluidCollections.dll
+C:\Users\joshw\source\repos\Blue0500\FluidCollections\src\FluidCollections.Demo\bin\Debug\netcoreapp2.0\FluidCollections.pdb
+C:\Users\joshw\source\repos\Blue0500\FluidCollections\src\FluidCollections.Demo\obj\Debug\netcoreapp2.0\FluidCollections.Demo.csproj.CopyComplete
+C:\Users\joshw\source\repos\Blue0500\FluidCollections\src\FluidCollections.Demo\obj\Debug\netcoreapp2.0\FluidCollections.Demo.dll
+C:\Users\joshw\source\repos\Blue0500\FluidCollections\src\FluidCollections.Demo\obj\Debug\netcoreapp2.0\FluidCollections.Demo.pdb

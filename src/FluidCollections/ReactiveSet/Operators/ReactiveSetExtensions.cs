@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 
 namespace FluidCollections {
     public static partial class ReactiveSetExtensions {
@@ -28,25 +26,26 @@ namespace FluidCollections {
                 .Select(x => x.Value);
         }        
 
-        public static IReactiveSet<T> Buffer<T>(this IReactiveSet<T> set, TimeSpan bufferTime) {
+        public static ICollectedReactiveSet<T> Buffer<T>(this IReactiveSet<T> set, TimeSpan bufferTime) {
             if (set == null) throw new ArgumentNullException(nameof(set));
 
-            return set.AsObservable().Buffer(bufferTime).Select(x => x.SelectMany(y => y)).ToReactiveSet(set.Contains);
+            var obs = set.AsObservable();
+            return obs.FirstAsync().Concat(obs.Skip(1).Buffer(bufferTime).Select(x => x.SelectMany(y => y))).ToReactiveSet();
         }
 
-        public static IReactiveSet<T> Buffer<T>(this IReactiveSet<T> set, int bufferCount) {
+        public static ICollectedReactiveSet<T> Buffer<T>(this IReactiveSet<T> set, int bufferCount) {
             if (set == null) throw new ArgumentNullException(nameof(set));
 
-            return set.AsObservable().Buffer(bufferCount).Select(x => x.SelectMany(y => y)).ToReactiveSet(set.Contains);
+            var obs = set.AsObservable();
+            return obs.FirstAsync().Concat(obs.Skip(1).Buffer(bufferCount).Select(x => x.SelectMany(y => y))).ToReactiveSet();
         }
 
 #if net462
         public static IReactiveSet<T> ObserveOnDispatcher<T>(this IReactiveSet<T> set) {
             if (set == null) throw new ArgumentNullException(nameof(set));
 
-            return set.AsObservable().ObserveOnDispatcher().ToReactiveSet(set.Contains);
+            return set.AsObservable().ObserveOnDispatcher().ToSet(set.Contains);
         }
 #endif
-
     }
 }

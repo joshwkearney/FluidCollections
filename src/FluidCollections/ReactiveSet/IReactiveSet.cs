@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Reactive;
-using System.Text;
 
 namespace FluidCollections {
     public interface IReactiveSet<T> {
