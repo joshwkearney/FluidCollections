@@ -7,24 +7,21 @@ using System.Reactive.Subjects;
 
 namespace FluidCollections {
     internal class SetSelectImplementation<T, TResult> : ICollectedReactiveSet<TResult> {
-        private readonly Subject<IEnumerable<ReactiveSetChange<TResult>>> changes = new Subject<IEnumerable<ReactiveSetChange<TResult>>>();
+        private readonly Subject<ReactiveSetChange<TResult>> changes = new Subject<ReactiveSetChange<TResult>>();
         private readonly IDisposable subscriptions;
         private readonly Func<T, TResult> selector;
 
-        private readonly IDictionary<TResult, int> counts;
+        private readonly Dictionary<TResult, int> counts = new Dictionary<TResult, int>();
         private readonly Dictionary<T, TResult> conversions = new Dictionary<T, TResult>();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public object SyncRoot { get; } = new object();
+        private readonly object syncRoot = new object();
 
         public int Count => this.counts.Count;
 
-        public SetSelectImplementation(IObservable<IEnumerable<ReactiveSetChange<T>>> inner, Func<T, TResult> selector, IDictionary<TResult, int> dict) {
+        public SetSelectImplementation(IObservable<ReactiveSetChange<T>> inner, Func<T, TResult> selector) {
             this.selector = selector;
-
-            this.counts = dict;
-            this.counts.Clear();
 
             this.subscriptions = inner.Subscribe(
                 this.ProcessIncomingChanges,
@@ -33,17 +30,11 @@ namespace FluidCollections {
             );
         }
 
-        public IReadOnlyCollection<TResult> ToCollection() {
-            lock (this.SyncRoot) {
-                return this.counts.Keys.ToArray();
-            }
-        }
-
-        public IObservable<IEnumerable<ReactiveSetChange<TResult>>> AsObservable() {
-            return Observable.Create<IEnumerable<ReactiveSetChange<TResult>>>(observer => {
-                lock (this.SyncRoot) {
-                    var initialState = this.counts.Select(x => new ReactiveSetChange<TResult>(x.Key, ReactiveSetChangeReason.Add)).ToArray();
-                    observer.OnNext(initialState);
+        public IObservable<ReactiveSetChange<TResult>> AsObservable() {
+            return Observable.Create<ReactiveSetChange<TResult>>(observer => {
+                lock (this.syncRoot) {
+                    var change = new ReactiveSetChange<TResult>(ReactiveSetChangeReason.Add, this.counts.Keys);
+                    observer.OnNext(change);
 
                     return this.changes.Subscribe(observer);
                 }
@@ -57,56 +48,61 @@ namespace FluidCollections {
 
         public bool Contains(TResult value) => this.counts.ContainsKey(value);
 
-        private void ProcessIncomingChanges(IEnumerable<ReactiveSetChange<T>> changes) {
-            var updates = new List<ReactiveSetChange<TResult>>();
-
+        private void ProcessIncomingChanges(ReactiveSetChange<T> change) {
             // Update the local set first
-            lock (this.SyncRoot) {
-                // Compute new changes
-                foreach (var change in changes) {
-                    if (change.ChangeReason == ReactiveSetChangeReason.Add) {
-                        if (!this.conversions.ContainsKey(change.Value)) {
-                            var selected = this.selector(change.Value);
-                            this.conversions[change.Value] = selected;
-                            var newChange = new ReactiveSetChange<TResult>(selected, change.ChangeReason);
+            lock (this.syncRoot) {
+                ReactiveSetChange<TResult> newChange;
 
-                            if (!this.counts.ContainsKey(newChange.Value)) {
-                                updates.Add(newChange);
+                // Compute new changes
+                if (change.ChangeReason == ReactiveSetChangeReason.Add) {
+                    var addedItems = new List<TResult>();
+
+                    foreach (var item in change.Items) {
+                        // We haven't uncountered this item yet
+                        if (!this.conversions.ContainsKey(item)) {
+                            // Convert and store the conversion
+                            var selected = this.selector(item);
+                            this.conversions[item] = selected;
+
+                            // If we haven't encountered this output before, make sure to produce a change
+                            // notification and add it to the counts
+                            if (!this.counts.ContainsKey(selected)) {
+                                addedItems.Add(selected);
+                                this.counts[selected] = 0;
+                            }
+
+                            this.counts[selected]++;
+                        }
+                    }
+
+                    newChange = new ReactiveSetChange<TResult>(ReactiveSetChangeReason.Add, addedItems);
+                }
+                else {
+                    var removedItems = new List<TResult>();
+
+                    foreach (var item in change.Items) {
+                        // We can remove this item
+                        if (this.conversions.TryGetValue(item, out var newValue)) {
+                            // Remove the item
+                            this.conversions.Remove(item);
+
+                            // Decrement the count of this output
+                            this.counts[newValue]--;
+
+                            // Produce a change notification if we ran out of this output
+                            if (this.counts[newValue] == 0) {
+                                removedItems.Add(newValue);
+                                this.counts.Remove(newValue);
                             }
                         }
                     }
-                    else if (this.conversions.TryGetValue(change.Value, out var newValue)) {
-                        var newChange = new ReactiveSetChange<TResult>(newValue, change.ChangeReason);
 
-                        // Remove the item and maybe remove the dictionary entry
-                        if (this.counts.ContainsKey(newChange.Value)) {
-                            this.conversions.Remove(change.Value);
-                            updates.Add(newChange);
-                        }
-                    }
+                    newChange = new ReactiveSetChange<TResult>(ReactiveSetChangeReason.Remove, removedItems);
                 }
 
                 // Signal observers of the change
-                this.changes.OnNext(updates);
+                this.changes.OnNext(newChange);
                 this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Count)));
-
-                // Update internal set
-                foreach (var change in updates) {
-                    if (change.ChangeReason == ReactiveSetChangeReason.Add) {
-                        if (!this.counts.ContainsKey(change.Value)) {
-                            this.counts[change.Value] = 0;
-                        }
-
-                        this.counts[change.Value]++;
-                    }
-                    else {
-                        this.counts[change.Value]--;
-
-                        if (this.counts[change.Value] == 0) {
-                            this.counts.Remove(change.Value);
-                        }
-                    }
-                }
             }
         }
     }

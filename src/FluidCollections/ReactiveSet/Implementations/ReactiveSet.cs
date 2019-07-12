@@ -7,16 +7,16 @@ using System.Reactive.Subjects;
 
 namespace FluidCollections {
     public class ReactiveSet<T> : ICollectedReactiveSet<T> {
-        private readonly Subject<IEnumerable<ReactiveSetChange<T>>> changes = new Subject<IEnumerable<ReactiveSetChange<T>>>();
+        private readonly Subject<ReactiveSetChange<T>> changes = new Subject<ReactiveSetChange<T>>();
         private readonly ISet<T> set;
+        private readonly object syncRoot = new object();
+        private readonly List<IDisposable> subscriptions;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private object SyncRoot { get; } = new object();
-
         public int Count => this.set.Count;
 
-        public ReactiveSet() : this(new HashSet<T>()) { }
+        public ReactiveSet() : this(new T[0]) { }
 
         public ReactiveSet(IEnumerable<T> items) {
             if (items == null) {
@@ -26,10 +26,33 @@ namespace FluidCollections {
             this.set = new HashSet<T>(items);
         }
 
-        public IObservable<IEnumerable<ReactiveSetChange<T>>> AsObservable() {
-            return Observable.Create<IEnumerable<ReactiveSetChange<T>>>(observer => {
-                lock (this.SyncRoot) {
-                    var initialState = this.set.Select(x => new ReactiveSetChange<T>(x, ReactiveSetChangeReason.Add)).ToArray();
+        public ReactiveSet(IObservable<ReactiveSetChange<T>> changeStream) {
+            if (changeStream == null) {
+                throw new ArgumentNullException(nameof(changeStream));
+            }
+
+            this.subscriptions.Add(
+                changeStream.Subscribe(
+                    change => {
+                        if (change.ChangeReason == ReactiveSetChangeReason.Add) {
+                            this.AddRange(change.Items);
+                        }
+                        else {
+                            this.RemoveRange(change.Items);
+                        }
+                    },
+                    this.changes.OnError,
+                    this.changes.OnCompleted
+                )
+            );
+        }
+
+        public bool Contains(T value) => this.set.Contains(value);
+
+        public IObservable<ReactiveSetChange<T>> AsObservable() {
+            return Observable.Create<ReactiveSetChange<T>>(observer => {
+                lock (this.syncRoot) {
+                    var initialState = new ReactiveSetChange<T>(ReactiveSetChangeReason.Add, this.set);
                     observer.OnNext(initialState);
 
                     var subscription = this.changes.Subscribe(observer);
@@ -39,10 +62,15 @@ namespace FluidCollections {
         }
 
         public bool Add(T item) {
-            lock (this.SyncRoot) {
-                if (!this.set.Contains(item)) {
+            if (item == null) {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            if (!this.set.Contains(item)) {
+                lock (this.syncRoot) {
                     // Update observers
-                    this.changes.OnNext(new[] { new ReactiveSetChange<T>(item, ReactiveSetChangeReason.Add) });
+                    var change = new ReactiveSetChange<T>(ReactiveSetChangeReason.Add, new[] { item });
+                    this.changes.OnNext(change);
 
                     this.set.Add(item);
                     this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Count)));
@@ -55,38 +83,45 @@ namespace FluidCollections {
         }
 
         public int AddRange(IEnumerable<T> elements) {
-            int added = 0;
+            if (elements == null) {
+                throw new ArgumentNullException(nameof(elements));
+            }
 
-            lock (this.SyncRoot) {
+            lock (this.syncRoot) {
+                // Figure out which items need to be added
                 var addedItems = new HashSet<T>();
-                var changes = new List<ReactiveSetChange<T>>();
-
                 foreach (var item in elements) {
-                    if (!this.set.Contains(item) && !addedItems.Contains(item)) {
-                        added++;
-                        changes.Add(new ReactiveSetChange<T>(item, ReactiveSetChangeReason.Add));
+                    if (!this.set.Contains(item)) {
                         addedItems.Add(item);
                     }
                 }
 
-                this.changes.OnNext(changes);
+                // Produce a change
+                var change = new ReactiveSetChange<T>(ReactiveSetChangeReason.Add, addedItems);
+                this.changes.OnNext(change);
 
+                // Update the set
                 foreach (T item in addedItems) {
                     this.set.Add(item);
                 }
 
                 this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Count)));
+                return addedItems.Count;
             }
-
-            return added;
         }
 
         public bool Remove(T item) {
-            lock (this.SyncRoot) {
-                if (this.set.Contains(item)) {
-                    // Update observers
-                    this.changes.OnNext(new[] { new ReactiveSetChange<T>(item, ReactiveSetChangeReason.Remove) });
+            if (item == null) {
+                throw new ArgumentNullException(nameof(item));
+            }
 
+            if (this.set.Contains(item)) {
+                lock (this.syncRoot) {
+                    // Update observers
+                    var change = new ReactiveSetChange<T>(ReactiveSetChangeReason.Remove, new[] { item });
+                    this.changes.OnNext(change);
+
+                    // Update the set
                     this.set.Remove(item);
                     this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Count)));
 
@@ -98,35 +133,37 @@ namespace FluidCollections {
         }
 
         public int RemoveRange(IEnumerable<T> elements) {
-            int removed = 0;
+            if (elements == null) {
+                throw new ArgumentNullException(nameof(elements));
+            }
 
-            lock (this.SyncRoot) {
+            lock (this.syncRoot) {
                 var removedItems = new HashSet<T>();
-                var changes = new List<ReactiveSetChange<T>>();
 
                 foreach (var item in elements) {
-                    if (this.set.Contains(item) && !removedItems.Contains(item)) {
-                        removed++;
-                        changes.Add(new ReactiveSetChange<T>(item, ReactiveSetChangeReason.Remove));
+                    if (this.set.Contains(item)) {
                         removedItems.Add(item);
                     }
                 }
 
-                this.changes.OnNext(changes);
+                var change = new ReactiveSetChange<T>(ReactiveSetChangeReason.Remove, removedItems);
+                this.changes.OnNext(change);
 
                 foreach (T item in removedItems) {
-                    this.set.Add(item);
+                    this.set.Remove(item);
                 }
 
                 this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Count)));
+                return removedItems.Count;
             }
-
-            return removed;
         }
 
-        public void Edit(IEnumerable<T> elements) {
-            ISet<T> set;
+        public void EditTo(IEnumerable<T> elements) {
+            if (elements == null) {
+                throw new ArgumentNullException(nameof(elements));
+            }
 
+            ISet<T> set;
             if (elements is ISet<T> elemSet) {
                 set = elemSet;
             }
@@ -134,7 +171,7 @@ namespace FluidCollections {
                 set = new HashSet<T>(elements);
             }
 
-            lock (this.SyncRoot) {
+            lock (this.syncRoot) {
                 var toAdd = new List<T>();
                 var toRemove = new List<T>();
 
@@ -156,11 +193,10 @@ namespace FluidCollections {
         }
 
         public void Clear() {
-            lock (this.SyncRoot) {
-                var state = this.set.Select(x => new ReactiveSetChange<T>(x, ReactiveSetChangeReason.Remove)).ToArray();
-
+            lock (this.syncRoot) {
                 // Update observers
-                this.changes.OnNext(state);
+                var change = new ReactiveSetChange<T>(ReactiveSetChangeReason.Remove, this.set);
+                this.changes.OnNext(change);
 
                 this.set.Clear();
                 this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Count)));
@@ -168,15 +204,11 @@ namespace FluidCollections {
         }
 
         public void Dispose() {
+            foreach (var sub in this.subscriptions) {
+                sub.Dispose();
+            }
+
             this.changes.OnCompleted();
         }
-
-        public IReadOnlyCollection<T> ToCollection() {
-            lock (this.SyncRoot) {
-                return this.set.ToArray();
-            }
-        }
-
-        public bool Contains(T value) => this.set.Contains(value);
     }
 }

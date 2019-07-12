@@ -21,17 +21,5 @@ namespace FluidCollections {
 
             return set.Aggregate(1, (x, y) => x * y, (x, y) => x / y);
         }
-
-        public static IObservable<T> Min<T>(this IOrderedReactiveSet<T> set) {
-            if (set == null) throw new ArgumentNullException(nameof(set));
-
-            return set.AsObservable().Select(_ => set.Min).DistinctUntilChanged();
-        }
-
-        public static IObservable<T> Max<T>(this IOrderedReactiveSet<T> set) {
-            if (set == null) throw new ArgumentNullException(nameof(set));
-
-            return set.AsObservable().Select(_ => set.Max).DistinctUntilChanged();
-        }
     }
 }

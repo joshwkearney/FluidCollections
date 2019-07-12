@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Reactive.Linq;
 
 namespace FluidCollections {
@@ -18,23 +20,21 @@ namespace FluidCollections {
                     .AsObservable()
                     .Subscribe(
                         x => {
-                            foreach (var change in x) {
-                                try {
-                                    if (change.ChangeReason == ReactiveSetChangeReason.Add) {
-                                        current = addFunc(current, change.Value);
-                                    }
-                                    else {
-                                        current = removeFunc(current, change.Value);
-                                    }
+                            try {
+                                if (x.ChangeReason == ReactiveSetChangeReason.Add) {
+                                    current = x.Items.Aggregate(current, addFunc);
                                 }
-                                catch (Exception ex) {
-                                    observer.OnError(ex);
-                                    sub?.Dispose();
-                                    return;
+                                else {
+                                    current = x.Items.Aggregate(current, removeFunc);
                                 }
-                            }
 
-                            observer.OnNext(current);
+                                observer.OnNext(current);
+                            }
+                            catch (Exception ex) {
+                                observer.OnError(ex);
+                                sub?.Dispose();
+                                return;
+                            }
                         },
                         observer.OnError,
                         observer.OnCompleted

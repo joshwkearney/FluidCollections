@@ -8,8 +8,8 @@ namespace FluidCollections {
             if (first == null) throw new ArgumentNullException(nameof(first));
             if (second == null) throw new ArgumentNullException(nameof(second));
 
-            var obs1 = first.AsObservable().Select(changes => changes.Where(x => !second.Contains(x.Value)));
-            var obs2 = second.AsObservable().Select(changes => changes.Where(x => !first.Contains(x.Value)));
+            var obs1 = first.AsObservable().Select(change => new ReactiveSetChange<T>(change.ChangeReason, change.Items.Where(x => !second.Contains(x))));
+            var obs2 = second.AsObservable().Select(change => changes.Where(x => !first.Contains(x.Value)));
 
             return obs1.Merge(obs2).ToReactiveSet(x => first.Contains(x) || second.Contains(x));
         }

@@ -11,9 +11,8 @@ namespace FluidCollections {
 
             return set
                 .AsObservable()
-                .Select(x => x.Where(y => y.ChangeReason == ReactiveSetChangeReason.Add))
-                .SelectMany(x => x)
-                .Select(x => x.Value);
+                .Where(x => x.ChangeReason == ReactiveSetChangeReason.Add)
+                .SelectMany(x => x.Items);
         }
 
         public static IObservable<T> ElementsRemoved<T>(this IReactiveSet<T> set) {
@@ -21,24 +20,29 @@ namespace FluidCollections {
 
             return set
                 .AsObservable()
-                .Select(x => x.Where(y => y.ChangeReason == ReactiveSetChangeReason.Remove))
-                .SelectMany(x => x)
-                .Select(x => x.Value);
+                .Where(x => x.ChangeReason == ReactiveSetChangeReason.Remove)
+                .SelectMany(x => x.Items);
         }        
 
-        public static ICollectedReactiveSet<T> Buffer<T>(this IReactiveSet<T> set, TimeSpan bufferTime) {
-            if (set == null) throw new ArgumentNullException(nameof(set));
+        //public static ICollectedReactiveSet<T> Buffer<T>(this IReactiveSet<T> set, TimeSpan bufferTime) {
+        //    if (set == null) throw new ArgumentNullException(nameof(set));
 
-            var obs = set.AsObservable();
-            return obs.FirstAsync().Concat(obs.Skip(1).Buffer(bufferTime).Select(x => x.SelectMany(y => y))).ToReactiveSet();
-        }
+        //    var obs = set.AsObservable();
+        //    return obs.FirstAsync()
+        //        .Concat(
+        //            obs
+        //                .Skip(1)
+        //                .Buffer(bufferTime)
+        //                .Select(x => x.SelectMany(y => y)))
+        //        .ToReactiveSet();
+        //}
 
-        public static ICollectedReactiveSet<T> Buffer<T>(this IReactiveSet<T> set, int bufferCount) {
-            if (set == null) throw new ArgumentNullException(nameof(set));
+        //public static ICollectedReactiveSet<T> Buffer<T>(this IReactiveSet<T> set, int bufferCount) {
+        //    if (set == null) throw new ArgumentNullException(nameof(set));
 
-            var obs = set.AsObservable();
-            return obs.FirstAsync().Concat(obs.Skip(1).Buffer(bufferCount).Select(x => x.SelectMany(y => y))).ToReactiveSet();
-        }
+        //    var obs = set.AsObservable();
+        //    return obs.FirstAsync().Concat(obs.Skip(1).Buffer(bufferCount).Select(x => x.SelectMany(y => y))).ToReactiveSet();
+        //}
 
 #if net462
         public static IReactiveSet<T> ObserveOnDispatcher<T>(this IReactiveSet<T> set) {

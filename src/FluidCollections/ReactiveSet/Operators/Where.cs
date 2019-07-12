@@ -10,7 +10,7 @@ namespace FluidCollections {
 
             return set
                 .AsObservable()
-                .Select(changes => changes.Where(change => filter(change.Value)))
+                .Select(change => new ReactiveSetChange<T>(change.ChangeReason, change.Items.Where(filter)))
                 .ToReactiveSet(x => filter(x) && set.Contains(x));
         }
     }

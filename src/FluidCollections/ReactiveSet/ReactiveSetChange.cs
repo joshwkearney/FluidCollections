@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace FluidCollections {
     public enum ReactiveSetChangeReason {
@@ -6,30 +7,14 @@ namespace FluidCollections {
         Remove = 1
     }
 
-    public struct ReactiveSetChange<T> : IEquatable<ReactiveSetChange<T>> {
+    public struct ReactiveSetChange<T> {
         public ReactiveSetChangeReason ChangeReason { get; }
 
-        public T Value { get; }
+        public IEnumerable<T> Items { get; }
 
-        public ReactiveSetChange(T item, ReactiveSetChangeReason reason) {
-            this.Value = item;
+        public ReactiveSetChange(ReactiveSetChangeReason reason, IEnumerable<T> items) {
+            this.Items = items;
             this.ChangeReason = reason;
-        }
-
-        public bool Equals(ReactiveSetChange<T> other) {
-            return this.ChangeReason == other.ChangeReason && this.Value.Equals(other.Value);
-        }
-
-        public override bool Equals(object obj) {
-            if (obj is ReactiveSetChange<T> change) {
-                return this.Equals(change);
-            }
-
-            return false;
-        }
-
-        public override int GetHashCode() {
-            return this.ChangeReason.GetHashCode() + 37 * (this.Value?.GetHashCode() ?? 1);
         }
     }
 }
