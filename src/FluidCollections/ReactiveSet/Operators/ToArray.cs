@@ -6,8 +6,8 @@ using System.Text;
 
 namespace FluidCollections {
     public static partial class ReactiveSetExtensions {
-        public static IEnumerable<T> ToEnumerable<T>(this IReactiveSet<T> set) {
-            return set.AsObservable().FirstAsync().Wait().Items;
+        public static T[] ToArray<T>(this IReactiveSet<T> set) {
+            return set.AsObservable().FirstAsync().Select(x => x.Items.ToArray()).Wait();
         }
     }
 }

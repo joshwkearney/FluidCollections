@@ -10,7 +10,7 @@ namespace FluidCollections {
         private readonly Subject<ReactiveSetChange<T>> changes = new Subject<ReactiveSetChange<T>>();
         private readonly ISet<T> set;
         private readonly object syncRoot = new object();
-        private readonly List<IDisposable> subscriptions;
+        private readonly List<IDisposable> subscriptions = new List<IDisposable>();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -30,6 +30,8 @@ namespace FluidCollections {
             if (changeStream == null) {
                 throw new ArgumentNullException(nameof(changeStream));
             }
+
+            this.set = new HashSet<T>();
 
             this.subscriptions.Add(
                 changeStream.Subscribe(
@@ -55,8 +57,7 @@ namespace FluidCollections {
                     var initialState = new ReactiveSetChange<T>(ReactiveSetChangeReason.Add, this.set);
                     observer.OnNext(initialState);
 
-                    var subscription = this.changes.Subscribe(observer);
-                    return () => subscription.Dispose();
+                    return this.changes.Subscribe(observer);
                 }
             });
         }

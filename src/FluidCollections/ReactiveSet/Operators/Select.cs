@@ -7,7 +7,7 @@ using System.Reactive.Subjects;
 
 namespace FluidCollections {
     public static partial class ReactiveSetExtensions {
-        internal static ICollectedReactiveSet<TResult> Select<T, TResult>(this IReactiveSet<T> set, Func<T, TResult> filter) {
+        public static ICollectedReactiveSet<TResult> Select<T, TResult>(this IReactiveSet<T> set, Func<T, TResult> filter) {
             if (set == null) throw new ArgumentNullException(nameof(set));
             if (filter == null) throw new ArgumentNullException(nameof(filter));
 
