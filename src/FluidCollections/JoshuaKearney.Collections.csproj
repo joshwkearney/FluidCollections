@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="log4net" Version="3.3.0" />
     <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
     <PackageReference Include="System.Reactive" Version="4.1.5" />
     <PackageReference Include="System.Reactive.Core" Version="4.1.5" />
